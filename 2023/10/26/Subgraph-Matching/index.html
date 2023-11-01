@@ -183,7 +183,7 @@
 
             <span class="meta-info-item article-update-date">
                 <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                <span class="pc" data-updated="Fri Oct 27 2023 14:17:06 GMT+0800">2023-10-27 14:17:06</span>
+                <span class="pc" data-updated="Wed Nov 01 2023 17:59:00 GMT+0800">2023-11-01 17:59:00</span>
             </span>
         
 
@@ -212,7 +212,7 @@
                 <div class="article-content keep-markdown-body">
                     
 
-                    <h2 id="子图匹配问题"><a href="#子图匹配问题" class="headerlink" title="子图匹配问题"></a>子图匹配问题</h2><p>子图同构(subgraph isomorphism)，又名子图匹配(subgraph matching)，直观感受如图：</p>
+                    <h1 id="子图匹配问题"><a href="#子图匹配问题" class="headerlink" title="子图匹配问题"></a>子图匹配问题</h1><p>子图同构(subgraph isomorphism)，又名子图匹配(subgraph matching)，直观感受如图：</p>
 <p><img  
                      lazyload
                      alt="image"
@@ -221,10 +221,127 @@
                 ></p>
 <span id="more"></span>
 
-<h3 id="子图匹配算法"><a href="#子图匹配算法" class="headerlink" title="子图匹配算法"></a>子图匹配算法</h3><h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a class="link"   target="_blank" rel="noopener" href="https://iq.opengenus.org/graph-and-subgraph-isomorphism/" >一篇介绍子图匹配的英文博客<i class="fas fa-external-link-alt"></i></a></p>
+<p>普通的算法不太能work，需要学习新东西。<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="https://cdn.statically.io/gh/Evelynn1014/picx-images-hosting@master/image.6fsu354bzec.webp"
+                      alt="img.png"
+                ></p>
+<h2 id="子图匹配算法"><a href="#子图匹配算法" class="headerlink" title="子图匹配算法"></a>子图匹配算法</h2><p>对于子图同构（匹配），采用<a class="link"   target="_blank" rel="noopener" href="https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html" >NetworkX库文档<i class="fas fa-external-link-alt"></i></a>中的定义：</p>
+<p>Graph theory literature can be ambiguous about the meaning of the above statement, and we seek to clarify it now.</p>
+<p>In the VF2 literature, a mapping M is said to be a graph-subgraph isomorphism iff M is an isomorphism between G2 and a subgraph of G1. Thus, to say that G1 and G2 are graph-subgraph isomorphic is to say that a subgraph of G1 is isomorphic to G2.</p>
+<p>Other literature uses the phrase ‘subgraph isomorphic’ as in ‘G1 does not have a subgraph isomorphic to G2’. Another use is as an in adverb for isomorphic. Thus, to say that G1 and G2 are subgraph isomorphic is to say that a subgraph of G1 is isomorphic to G2.</p>
+<p>Finally, the term ‘subgraph’ can have multiple meanings. In this context, ‘subgraph’ always means a ‘node-induced subgraph’. Edge-induced subgraph isomorphisms are not directly supported, but one should be able to perform the check by making use of nx.line_graph(). For subgraphs which are not induced, the term ‘monomorphism’ is preferred over ‘isomorphism’.</p>
+<p>Let G&#x3D;(N,E) be a graph with a set of nodes N and set of edges E.</p>
+<ul>
+<li><p>if G’&#x3D;(N’,E’) is a subgraph, then:<br>N’ is a subset of N E’ is a subset of E</p>
+</li>
+<li><p>If G’&#x3D;(N’,E’) is a node-induced subgraph, then:<br>N’ is a subset of N E’ is the subset of edges in E relating nodes in N’</p>
+</li>
+<li><p>If G’&#x3D;(N’,E’) is an edge-induced subgraph, then:<br>N’ is the subset of nodes in N related by edges in E’ E’ is a subset of E</p>
+</li>
+<li><p>If G’&#x3D;(N’,E’) is a monomorphism, then:<br>N’ is a subset of N E’ is a subset of the set of edges in E relating nodes in N’</p>
+</li>
+</ul>
+<p>Note that if G’ is a node-induced subgraph of G, then it is always a subgraph monomorphism of G, but the opposite is not always true, as a monomorphism can have fewer edges.</p>
+<p>翻译为：</p>
+<p>在图论文献中，上述陈述的含义可能会有歧义，我们现在寻求澄清它。</p>
+<p>在VF2文献中，一个映射M被称为图-子图同构，当且仅当M是G2和G1的一个子图之间的同构。因此，说G1和G2是图-子图同构意味着G1的一个子图同构于G2。</p>
+<p>其他文献使用短语”子图同构”，例如”G1没有一个子图同构于G2”。另一种用法是作为同构的副词。因此，说G1和G2是子图同构意味着G1的一个子图同构于G2。</p>
+<p>最后，术语”子图”可能具有多重含义。在这个上下文中，”子图”总是指”节点诱导子图”。不直接支持”边诱导子图同构”，但可以通过使用nx.line_graph()来执行检查。对于不是诱导的子图，更喜欢术语”单射”而不是”同构”。</p>
+<p>让G&#x3D;(N,E)表示一个具有节点集N和边集E的图。</p>
+<p>让 G&#x3D;(N,E) 表示一个具有节点集 N 和边集 E 的图。</p>
+<ul>
+<li><p>如果 G’&#x3D;(N’,E’) 是一个子图，那么：<br>N’ 是 N 的子集<br>E’ 是 E 的子集</p>
+</li>
+<li><p>如果 G’&#x3D;(N’,E’) 是一个节点诱导子图，那么：<br>N’ 是 N 的子集<br>E’ 是 E 中与节点 N’ 中的节点相关的边的子集</p>
+</li>
+<li><p>如果 G’&#x3D;(N’,E’) 是一个边诱导子图，那么：<br>N’ 是与边 E’ 中涉及的节点相关的节点的子集<br>E’ 是 E 的子集</p>
+</li>
+<li><p>如果 G’&#x3D;(N’,E’) 是一个单射（monomorphism），那么：<br>N’ 是 N 的子集<br>E’ 是与节点 N’ 中的节点相关的边的子集</p>
+</li>
+</ul>
+<p>需要注意的是，如果 G’ 是 G 的一个节点诱导子图，那么它总是 G 的一个子图单射，但反之则不一定成立，因为一个单射可以具有较少的边。</p>
+<h3 id="穷举法"><a href="#穷举法" class="headerlink" title="穷举法"></a>穷举法</h3><p>这是一种直观但不够高效的方法。穷举法的思想是遍历主图中的所有可能的子图，然后检查每个子图是否同构于给定的子图。这是一个从0开始学习子图匹配问题的好方法，因为它不需要复杂的数据结构或算法知识，但它在大规模图上的性能较差。</p>
+<p>下面是穷举法的基本步骤：</p>
+<ol>
+<li><p>生成子图候选：遍历主图中的所有节点，生成所有可能的子图候选。这可以通过递归或迭代的方式完成。</p>
+</li>
+<li><p>检查同构：对于每个生成的子图候选，检查它是否同构于给定的子图。这可以通过遍历给定子图的节点和边，然后尝试在生成的子图中找到相应的节点和边来实现。</p>
+</li>
+<li><p>记录匹配：如果找到同构，记录匹配的子图。</p>
+</li>
+<li><p>重复步骤1和2：继续生成更多的子图候选，并重复步骤2，直到遍历完整个主图。</p>
+</li>
+<li><p>返回匹配结果：返回找到的所有同构子图。</p>
+</li>
+</ol>
+<p>虽然穷举法是一种简单直观的方法，但在大型图上的性能非常低，因为它需要生成和检查大量的子图候选，特别是对于大型、高度连接的图。因此，实际应用中更常使用高效的子图匹配算法，如VF2算法、格拉斯哥求解器等。</p>
+<p>但如果是想从0开始学习子图匹配问题，穷举法是一个不错的起点，可以帮助你理解问题的本质和挑战。</p>
+<h4 id="穷举法示例代码"><a href="#穷举法示例代码" class="headerlink" title="穷举法示例代码"></a>穷举法示例代码</h4><p>简单的穷举法可以直接用GPT生成，针对具有点属性，边属性的有向图的示例代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> networkx <span class="keyword">as</span> nx</span><br><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> combinations</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">is_subgraph_isomorphic</span>(<span class="params">G, H</span>):</span><br><span class="line">    subgraph_matches = []</span><br><span class="line">    <span class="keyword">for</span> nodes <span class="keyword">in</span> combinations(G.nodes, <span class="built_in">len</span>(H.nodes)):</span><br><span class="line">        subgraph = G.subgraph(nodes)</span><br><span class="line">        <span class="keyword">if</span> is_isomorphic_with_attributes(subgraph, H):</span><br><span class="line">            subgraph_matches.append(subgraph)</span><br><span class="line">    <span class="keyword">return</span> subgraph_matches</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">is_isomorphic_with_attributes</span>(<span class="params">G, H</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">set</span>(G.nodes) == <span class="built_in">set</span>(H.nodes) <span class="keyword">or</span> <span class="keyword">not</span> <span class="built_in">set</span>(G.edges) == <span class="built_in">set</span>(H.edges):</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> node <span class="keyword">in</span> G.nodes:</span><br><span class="line">        <span class="keyword">if</span> G.nodes[node] != H.nodes[node]:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> edge <span class="keyword">in</span> G.edges:</span><br><span class="line">        <span class="keyword">if</span> G.edges[edge] != H.edges[edge]:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建主图G（有向图）</span></span><br><span class="line">G = nx.DiGraph()</span><br><span class="line">G.add_edge(<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>, weight=<span class="number">1</span>)</span><br><span class="line">G.add_edge(<span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;C&#x27;</span>, weight=<span class="number">2</span>)</span><br><span class="line">G.add_edge(<span class="string">&#x27;C&#x27;</span>, <span class="string">&#x27;D&#x27;</span>, weight=<span class="number">3</span>)</span><br><span class="line">G.nodes[<span class="string">&#x27;A&#x27;</span>][<span class="string">&#x27;label&#x27;</span>] = <span class="string">&#x27;A&#x27;</span></span><br><span class="line">G.nodes[<span class="string">&#x27;B&#x27;</span>][<span class="string">&#x27;label&#x27;</span>] = <span class="string">&#x27;B&#x27;</span></span><br><span class="line">G.nodes[<span class="string">&#x27;C&#x27;</span>][<span class="string">&#x27;label&#x27;</span>] = <span class="string">&#x27;C&#x27;</span></span><br><span class="line">G.nodes[<span class="string">&#x27;D&#x27;</span>][<span class="string">&#x27;label&#x27;</span>] = <span class="string">&#x27;D&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建子图H（有向图）</span></span><br><span class="line">H = nx.DiGraph()</span><br><span class="line">H.add_edge(<span class="string">&#x27;A&#x27;</span>, <span class="string">&#x27;B&#x27;</span>, weight=<span class="number">1</span>)</span><br><span class="line">H.add_edge(<span class="string">&#x27;B&#x27;</span>, <span class="string">&#x27;C&#x27;</span>, weight=<span class="number">2</span>)</span><br><span class="line">H.nodes[<span class="string">&#x27;A&#x27;</span>][<span class="string">&#x27;label&#x27;</span>] = <span class="string">&#x27;A&#x27;</span></span><br><span class="line">H.nodes[<span class="string">&#x27;B&#x27;</span>][<span class="string">&#x27;label&#x27;</span>] = <span class="string">&#x27;B&#x27;</span></span><br><span class="line">H.nodes[<span class="string">&#x27;C&#x27;</span>][<span class="string">&#x27;label&#x27;</span>] = <span class="string">&#x27;C&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找与子图H同构的所有子图</span></span><br><span class="line">subgraph_matches = is_subgraph_isomorphic(G, H)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印匹配结果</span></span><br><span class="line"><span class="keyword">for</span> subgraph <span class="keyword">in</span> subgraph_matches:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Matched Subgraph:&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Nodes:&quot;</span>, subgraph.nodes)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Edges:&quot;</span>, subgraph.edges)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="VF2算法"><a href="#VF2算法" class="headerlink" title="VF2算法"></a>VF2算法</h3><p>VF2算法（Vocabulary-Based Fast Subgraph Isomorphism）是一种用于子图同构检测的经典算法。它使用了节点标签和边连接关系来进行匹配，允许在主图中查找与子图同构的子图。</p>
+<p>VF2算法的主要思想如下：</p>
+<ul>
+<li><p>初始化</p>
+<p>  从主图和子图的起始节点开始，尝试将它们匹配。如果节点标签匹配，将其标记为匹配，并递归地尝试匹配它们的邻居。</p>
+</li>
+<li><p>扩展</p>
+<p>  如果已经有部分匹配，尝试为主图中的未匹配节点找到匹配的子图节点，以扩展匹配。扩展时要满足节点标签匹配和边的连接关系一致的条件。</p>
+</li>
+<li><p>回溯</p>
+<p>  如果不能找到合适的扩展，算法将回溯到前一个状态，取消当前的匹配，然后尝试其他可能的匹配。</p>
+</li>
+<li><p>终止条件</p>
+<p>  当所有的节点都匹配或者找不到进一步的匹配时，算法结束。</p>
+</li>
+<li><p>多重匹配</p>
+<p>  VF2算法可以找到多个匹配，而不仅仅是一个。</p>
+</li>
+</ul>
+<h4 id="使用VF2算法进行子图同构匹配示例"><a href="#使用VF2算法进行子图同构匹配示例" class="headerlink" title="使用VF2算法进行子图同构匹配示例"></a>使用VF2算法进行子图同构匹配示例</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> networkx <span class="keyword">as</span> nx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用DiGraphMatcher进行子图匹配，考虑节点属性和边属性</span></span><br><span class="line">matcher = nx.isomorphism.DiGraphMatcher(G, H,</span><br><span class="line">    node_match=<span class="keyword">lambda</span> x, y: x[<span class="string">&#x27;label&#x27;</span>] == y[<span class="string">&#x27;label&#x27;</span>],</span><br><span class="line">    edge_match=<span class="keyword">lambda</span> x, y: x[<span class="string">&#x27;weight&#x27;</span>] == y[<span class="string">&#x27;weight&#x27;</span>]</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取子图匹配的映射结果</span></span><br><span class="line">mapping = matcher.mapping</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(mapping)</span><br></pre></td></tr></table></figure>
+
+<h4 id="VF2算法流程伪代码"><a href="#VF2算法流程伪代码" class="headerlink" title="VF2算法流程伪代码"></a>VF2算法流程伪代码</h4><ul>
+<li><p>VF2是递归函数，它尝试为主图G中的节点找到匹配的子图H中的节点。如果找到合法匹配，将其添加到映射(mapping)中，并递归继续查找下一个匹配。当映射(mapping)覆盖了子图H中的所有节点时，报告找到的同构。</p>
+</li>
+<li><p>is_feasible 函数用于检查当前尝试的匹配是否合法。它考虑了节点标签的匹配，以及边连接关系的匹配。</p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">VF2(G, H, mapping):</span><br><span class="line">    <span class="keyword">if</span> mapping covers <span class="built_in">all</span> nodes <span class="keyword">in</span> H:</span><br><span class="line">        <span class="comment"># Found a valid isomorphism</span></span><br><span class="line">        report(mapping)</span><br><span class="line"></span><br><span class="line">    u = choose an unmatched node <span class="keyword">in</span> G</span><br><span class="line">    <span class="keyword">for</span> v <span class="keyword">in</span> H such that is_feasible(u, v, mapping):</span><br><span class="line">        mapping.add(u, v)</span><br><span class="line">        VF2(G, H, mapping)</span><br><span class="line">        mapping.remove(u, v)</span><br><span class="line"></span><br><span class="line">is_feasible(u, v, mapping):</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> label_match(G.nodes[u], H.nodes[v]):</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> u_i <span class="keyword">in</span> G.neighbors(u):</span><br><span class="line">        <span class="keyword">if</span> mapping[u_i] <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            v_i = mapping[u_i]</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> label_match(G.nodes[u], H.nodes[v]):</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> edge_match(G.edges(u, u_i), H.edges(v, v_i)):</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<h3 id="格拉斯哥求解器"><a href="#格拉斯哥求解器" class="headerlink" title="格拉斯哥求解器"></a>格拉斯哥求解器</h3><p>格拉斯哥求解器（Glasgow Subgraph Solver）的算法基于子图匹配和子图同构问题的研究，它采用了一种称为“模式化规约”（Pattern Refinement）的技术。</p>
+<p>图数据库和模式定义：用户首先提供一个图数据库，其中包含多个图，以及一个或多个图形模式（子图），这些模式将用于搜索和匹配。每个图和模式都由节点和边组成，可以具有不同的属性或标签。</p>
+<p>模式化规约：格拉斯哥求解器使用模式化规约技术来减少搜索空间和提高效率。</p>
+<p>基本思想如下：</p>
+<ol>
+<li><p>选择一个模式（子图）以作为初始模式。</p>
+</li>
+<li><p>将该初始模式与图数据库中的每个图进行匹配。</p>
+</li>
+<li><p>如果找到匹配，将该模式与匹配的图形合并，得到一个新的模式。</p>
+</li>
+<li><p>使用新模式重复匹配过程。</p>
+</li>
+<li><p>继续迭代，逐渐构建更大的模式。</p>
+</li>
+<li><p>这个过程会生成一系列模式，这些模式被称为“模式族”。模式族是一组与图数据库中的数据集相关的子图。这些模式族通常会更小，并且包含了一些通用的特征，以减少匹配过程的复杂性。</p>
+</li>
+<li><p>子图匹配：一旦生成了模式族，格拉斯哥求解器使用这些模式来进行子图匹配。具体的匹配算法可能基于图的同构性，但由于使用了模式化规约技术，它通常更高效。</p>
+</li>
+<li><p>匹配结果报告：匹配过程会返回匹配的结果，即在图数据库中找到的满足模式的子图。</p>
+</li>
+</ol>
+<p>格拉斯哥求解器的关键特点包括使用模式化规约技术来减少搜索空间，以及支持图数据库中的模式匹配。这种方法可以用于数据挖掘、图形搜索和其他应用中，特别是在需要处理大规模图数据库时。</p>
+<p>算法庞大复杂 ，不过我找到了<a class="link"   target="_blank" rel="noopener" href="https://github.com/ciaranm/glasgow-subgraph-solver" >代码：Glasgow Subgraph Solver<i class="fas fa-external-link-alt"></i></a><br>可以使用，使用方法在后文中会提及。</p>
+<h2 id="我可以成功运行的代码"><a href="#我可以成功运行的代码" class="headerlink" title="我可以成功运行的代码"></a>我可以成功运行的代码</h2><p>针对具有点属性，边属性的有向图的穷举法（Python）</p>
+<p>使用NX库内置的VF2算法（Python）</p>
+<p>一个开源的格拉斯哥求解器（C++）</p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a class="link"   target="_blank" rel="noopener" href="https://iq.opengenus.org/graph-and-subgraph-isomorphism/" >一篇介绍子图匹配的英文博客<i class="fas fa-external-link-alt"></i></a></p>
 <p><a class="link"   target="_blank" rel="noopener" href="https://qiita.com/nariaki3551/items/2263102e39db7039c54f" >一篇介绍ULLMANN算法的日文博客<i class="fas fa-external-link-alt"></i></a></p>
 <p><a class="link"   target="_blank" rel="noopener" href="https://dblp.org/rec/conf/gg/McCreeshP020.html" >论文：Glasgow Subgraph Solver<i class="fas fa-external-link-alt"></i></a></p>
 <p><a class="link"   target="_blank" rel="noopener" href="https://github.com/ciaranm/glasgow-subgraph-solver" >代码：Glasgow Subgraph Solver<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://networkx.org/documentation/stable/reference/algorithms/isomorphism.vf2.html" >NX库文档<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1zh411q7PW/?spm_id_from=333.337.search-card.all.click&vd_source=8c655356bef7c45e74d053c61f307c19" >图匹配算法 from Bilibili<i class="fas fa-external-link-alt"></i></a></p>
 
                 </div>
 
@@ -355,7 +472,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子图匹配问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">子图匹配算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.1.1.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子图匹配问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">子图匹配算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">穷举法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">穷举法示例代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.2.</span> <span class="nav-text">VF2算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8VF2%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84%E5%8C%B9%E9%85%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">使用VF2算法进行子图同构匹配示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">VF2算法流程伪代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E6%8B%89%E6%96%AF%E5%93%A5%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">格拉斯哥求解器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E5%8F%AF%E4%BB%A5%E6%88%90%E5%8A%9F%E8%BF%90%E8%A1%8C%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-number">1.2.</span> <span class="nav-text">我可以成功运行的代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></li></ol></li></ol>
     </div>
 </div>
 
@@ -524,7 +641,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子图匹配问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">子图匹配算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.1.1.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子图匹配问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">子图匹配算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">穷举法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">穷举法示例代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.2.</span> <span class="nav-text">VF2算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8VF2%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84%E5%8C%B9%E9%85%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">使用VF2算法进行子图同构匹配示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">VF2算法流程伪代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E6%8B%89%E6%96%AF%E5%93%A5%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">格拉斯哥求解器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E5%8F%AF%E4%BB%A5%E6%88%90%E5%8A%9F%E8%BF%90%E8%A1%8C%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-number">1.2.</span> <span class="nav-text">我可以成功运行的代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">1.2.0.1.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></li></ol></li></ol>
     </div>
 </div>
 
