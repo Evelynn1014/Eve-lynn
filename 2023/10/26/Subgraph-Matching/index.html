@@ -191,7 +191,7 @@
 
             <span class="meta-info-item article-update-date">
                 <i class="icon fa-solid fa-file-pen"></i>&nbsp;
-                <span class="pc" data-updated="Wed Nov 01 2023 20:04:04 GMT+0800">2023-11-01 20:04:04</span>
+                <span class="pc" data-updated="Thu Nov 02 2023 16:42:28 GMT+0800">2023-11-02 16:42:28</span>
             </span>
         
 
@@ -352,6 +352,103 @@
 <h1 id="我可以成功运行的代码"><a href="#我可以成功运行的代码" class="headerlink" title="我可以成功运行的代码"></a>我可以成功运行的代码</h1><p>针对具有点属性，边属性的有向图的穷举法（Python）</p>
 <p>使用NX库内置的VF2算法（Python）</p>
 <p>一个开源的格拉斯哥求解器（C++）</p>
+<h2 id="底图的建模"><a href="#底图的建模" class="headerlink" title="底图的建模"></a>底图的建模</h2><p>本节为解决如何将抽象成点和边的图结构作为代码的输入的问题。</p>
+<p>首先，我们要有一个底图，作为我们子图匹配的大图，以下面的图为例：</p>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="https://cdn.statically.io/gh/Evelynn1014/picx-images-hosting@master/danchunditu.21ojdxztahy8.jpg"
+                      alt="danchunditu"
+                ></p>
+<p>其中，C代表的是转弯，B代表的是减速带，这是我已知我们可以检测出来的landmark。</p>
+<p>现在可以准备将信息存到文件中了！不过怎么表示这不同的点？所以我们要给他们起名字！他们叫什么完全不重要，可以叫小狗小猫，也可以叫减速带01，这只是为了在图中添加边时，我们能准确的表达两个顶点。<br>为了能统一直观且方便测试，我将底图中的地标一一编号如图：</p>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="https://cdn.statically.io/gh/Evelynn1014/picx-images-hosting@master/biaohaoditu.1ixymahh2mao.jpg"
+                      alt="biaohaoditu"
+                ></p>
+<p>现在这些B1，B3，C2等标号是这些地标的名字，他们的属性是B或C，在匹配的时候，我们不需要知道我们检测到的地标具体是谁，只需要知道属性是什么就好。<br>比如检测到了B-C-B-C-C-B，我们可以匹配到一条B1-C1-B2-C4-C5-B9路径。</p>
+<p>由于我找到的代码都可以处理带点属性，边属性的有向图（我就是冲着这点去找的），本次地图中的B1-&gt;C3作为单行道演示。<br>现在点属性，有向都用到了，还有边属性不能浪费。</p>
+<p>于是，仿照衣服尺码大小（S M L），将道路长短分为三个等级，作为边的属性，这样做的好处是一定范围内可以解决距离推算的误差。（如属性M为120m～300m，预测走了240m，实际走了180m，他们都是M属性，主要是为了消除这种误差）在正式使用时，不同属性的阈值由实验来决定，本次只为演示。</p>
+<p>最终的结果如图：<br><img  
+                     lazyload
+                     alt="image"
+                     data-src="https://cdn.statically.io/gh/Evelynn1014/picx-images-hosting@master/20231102_153840.5ummq2k11xxc.webp"
+                      alt="20231102_153840"
+                ></p>
+<p>现在一切准备就绪，可以存储到文件中了！</p>
+<p>图可以用多种方式保存，比如邻接矩阵，邻接表等，以下方式更加现代。</p>
+<h3 id="存储到CSV（格拉斯哥求解器）"><a href="#存储到CSV（格拉斯哥求解器）" class="headerlink" title="存储到CSV（格拉斯哥求解器）"></a>存储到CSV（格拉斯哥求解器）</h3><p>这是格拉斯哥求解器的开源代码倡议的一种数据结构，他们写了强大的算法来读取CSV，同时，这种数据结构可以有效的存储有向&#x2F;无向图中的点、边属性。</p>
+<p>存储图的原则是，每一条可能走的最短边都要存进去！这其中有很多细节需要注意，以从B1经过B3最终走到B9为例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">b1&gt;b3,M</span><br><span class="line">b3&gt;c2,L</span><br><span class="line">c2&gt;b4,M</span><br><span class="line">b4&gt;b6,L</span><br><span class="line">b6&gt;b9,M</span><br><span class="line">b1,,B</span><br><span class="line">b3,,B</span><br><span class="line">b4,,B</span><br><span class="line">b6,,B</span><br><span class="line">b9,,B</span><br><span class="line">c2,,C</span><br></pre></td></tr></table></figure>
+<p>以下几点需要注意：</p>
+<ul>
+<li><p>b1&gt;b3,M 中，b1代表一个顶点，b3代表另一个顶点，这是我们人为起的名字，我们知道他们对应底图中的B1，B3。但其实他们叫什么都可以，我们只需要知道他们的属性是B即可。</p>
+</li>
+<li><p>b1&gt;b3,M 中，第一个分隔符是‘&gt;’代表有向的边，在制作底图是存在大量无向边，表示为‘v1,v2,属性’。本条路在底图中也是单行道，所以在做底图的时候也用‘&gt;’。</p>
+</li>
+<li><p>b1&gt;b3,M 中，没有空格，这点需要注意。</p>
+</li>
+<li><p>b1&gt;b3,M 中，在底图中明明有一个C1在这俩地标之间，为什么不写出来呢？因为车经过c1的时候没有转弯！也就是说，在正常行驶这条轨迹的过程中，我们检测不到c1，这一点在制作底图的时候也要考虑到。</p>
+</li>
+<li><p>b1&gt;b3,M 中，M代表的是这条边的属性，在图中，这条路的长度是B1-C1的长度 + C1-B3的长度，我们假设这俩长度加起来达不到L的阈值，但达到了M的阈值，所以设属性为M。</p>
+</li>
+<li><p>b3&gt;c2,L  c2&gt;b4,M 代表B3-C2-B4，这里一定要有C2，是因为这里真的进行了一次转弯。</p>
+</li>
+<li><p>b9,,B  c2,,C 这是在储存点的属性，每一个点都要有自己的属性（B&#x2F;C）。</p>
+</li>
+<li><p>最终，这个文件代表的意思是一条轨迹： </p>
+<p>B–（M）–B–（L）–C–（M）–B–（L）–B–（M）–B</p>
+</li>
+</ul>
+<p>我们看看这份数据匹配的结果是什么（底图的制作在下文提到）：</p>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="https://cdn.statically.io/gh/Evelynn1014/picx-images-hosting@master/image.3ieq6zdwupj4.webp"
+                      alt="image"
+                ></p>
+<p>看起来很成功，标号也都对得上，那如果顶点没有标号会不会匹配不了？当然不会！匹配的是边和顶点的属性，而不是名字！只要属性对得上就行，毕竟真正在路上行驶时只能检测出地标的属性。</p>
+<p>整个活看看：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">apple&gt;banana,M</span><br><span class="line">banana&gt;orange,L</span><br><span class="line">orange&gt;pear,M</span><br><span class="line">pear&gt;mango,L</span><br><span class="line">mango&gt;pineapple,M</span><br><span class="line">apple,,B</span><br><span class="line">banana,,B</span><br><span class="line">pear,,B</span><br><span class="line">mango,,B</span><br><span class="line">pineapple,,B</span><br><span class="line">orange,,C</span><br></pre></td></tr></table></figure>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="https://cdn.statically.io/gh/Evelynn1014/picx-images-hosting@master/image.2d9qaracalfk.webp"
+                      alt="image"
+                ></p>
+<p>果然没什么影响。</p>
+<p>现在要制作匹配的大图：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">B1&gt;C1,S</span><br><span class="line">B1&gt;B3,M</span><br><span class="line">B3&gt;C2,L</span><br><span class="line">B3&gt;B5,L</span><br><span class="line">B5&gt;C3,M</span><br><span class="line">C1&gt;B3,M</span><br><span class="line">C1,B2,S</span><br><span class="line">C2,B4,M</span><br><span class="line">C2&gt;B5,S</span><br><span class="line">B2,C4,L</span><br><span class="line">B2,B8,L</span><br><span class="line">C4,B8,S</span><br><span class="line">C4,B7,S</span><br><span class="line">C4,C5,L</span><br><span class="line">C4,C6,L</span><br><span class="line">B4,B6,L</span><br><span class="line">C5,C6,M</span><br><span class="line">C5,B6,M</span><br><span class="line">C5,B9,S</span><br><span class="line">C5,B7,L</span><br><span class="line">C6,B7,S</span><br><span class="line">B6,B9,M</span><br><span class="line">B1,,B</span><br><span class="line">B2,,B</span><br><span class="line">B3,,B</span><br><span class="line">B4,,B</span><br><span class="line">B5,,B</span><br><span class="line">B6,,B</span><br><span class="line">B7,,B</span><br><span class="line">B8,,B</span><br><span class="line">B9,,B</span><br><span class="line">C1,,C</span><br><span class="line">C2,,C</span><br><span class="line">C3,,C</span><br><span class="line">C4,,C</span><br><span class="line">C5,,C</span><br><span class="line">C6,,C</span><br></pre></td></tr></table></figure>
+<p>以下几点需要注意：</p>
+<ul>
+<li>一个顶点（无论B&#x2F;C）要和可以达到的所有方向的第一个减速带（B）相连。<ul>
+<li>如B6连接了B4，B9。（C5）</li>
+<li>如C4连接了B2，B7，B8。（还连接了C5，C6，原因看下一点）</li>
+</ul>
+</li>
+<li>一个顶点（无论B&#x2F;C）要和可以达到的所有方向的所有不经过减速带就能达到的转弯（C）相连。<ul>
+<li>如B1连接了C1，B3，没有连C2，这是因为前往C2前一定能检测到B（B3），可以提前更新。 </li>
+<li>如如B6连接了C5，C4连接了C5，C6。</li>
+<li>如B7不仅连接了C4，还连接了C5，C6，这是为了车经过C4的时候没有转弯，在经过C5的时候转弯依然可以正确监测到（B7-C5）</li>
+</ul>
+</li>
+<li>确保没有漏，距离要计算准确。</li>
+</ul>
+<p>现在可以使用格拉斯哥求解器来进行子图匹配啦！</p>
+<p><img  
+                     lazyload
+                     alt="image"
+                     data-src="https://cdn.statically.io/gh/Evelynn1014/picx-images-hosting@master/image.3ieq6zdwupj4.webp"
+                      alt="image"
+                ></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a class="link"   target="_blank" rel="noopener" href="https://iq.opengenus.org/graph-and-subgraph-isomorphism/" >一篇介绍子图匹配的英文博客<i class="fas fa-external-link-alt"></i></a></p>
 <p><a class="link"   target="_blank" rel="noopener" href="https://qiita.com/nariaki3551/items/2263102e39db7039c54f" >一篇介绍ULLMANN算法的日文博客<i class="fas fa-external-link-alt"></i></a></p>
 <p><a class="link"   target="_blank" rel="noopener" href="https://adriann.github.io/Ullman%20subgraph%20isomorphism.html" >ULLMANN<i class="fas fa-external-link-alt"></i></a></p>
@@ -504,7 +601,7 @@
             <div class="pc-post-toc right-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子图匹配问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">子图匹配算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">穷举法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">穷举法示例代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.2.</span> <span class="nav-text">VF2算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8VF2%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84%E5%8C%B9%E9%85%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">使用VF2算法进行子图同构匹配示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">VF2算法流程伪代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E6%8B%89%E6%96%AF%E5%93%A5%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">格拉斯哥求解器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%91%E5%8F%AF%E4%BB%A5%E6%88%90%E5%8A%9F%E8%BF%90%E8%A1%8C%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">我可以成功运行的代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子图匹配问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">子图匹配算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">穷举法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">穷举法示例代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.2.</span> <span class="nav-text">VF2算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8VF2%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84%E5%8C%B9%E9%85%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">使用VF2算法进行子图同构匹配示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">VF2算法流程伪代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E6%8B%89%E6%96%AF%E5%93%A5%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">格拉斯哥求解器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%91%E5%8F%AF%E4%BB%A5%E6%88%90%E5%8A%9F%E8%BF%90%E8%A1%8C%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">我可以成功运行的代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%95%E5%9B%BE%E7%9A%84%E5%BB%BA%E6%A8%A1"><span class="nav-number">2.1.</span> <span class="nav-text">底图的建模</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%88%B0CSV%EF%BC%88%E6%A0%BC%E6%8B%89%E6%96%AF%E5%93%A5%E6%B1%82%E8%A7%A3%E5%99%A8%EF%BC%89"><span class="nav-number">2.1.1.</span> <span class="nav-text">存储到CSV（格拉斯哥求解器）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
     </div>
 </div>
 
@@ -682,7 +779,7 @@
             <div class="tablet-post-toc">
                 <div class="post-toc-wrap border-box">
     <div class="post-toc border-box">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子图匹配问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">子图匹配算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">穷举法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">穷举法示例代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.2.</span> <span class="nav-text">VF2算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8VF2%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84%E5%8C%B9%E9%85%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">使用VF2算法进行子图同构匹配示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">VF2算法流程伪代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E6%8B%89%E6%96%AF%E5%93%A5%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">格拉斯哥求解器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%91%E5%8F%AF%E4%BB%A5%E6%88%90%E5%8A%9F%E8%BF%90%E8%A1%8C%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">我可以成功运行的代码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">子图匹配问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%90%E5%9B%BE%E5%8C%B9%E9%85%8D%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">子图匹配算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">穷举法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">穷举法示例代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.2.</span> <span class="nav-text">VF2算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8VF2%E7%AE%97%E6%B3%95%E8%BF%9B%E8%A1%8C%E5%AD%90%E5%9B%BE%E5%90%8C%E6%9E%84%E5%8C%B9%E9%85%8D%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">使用VF2算法进行子图同构匹配示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VF2%E7%AE%97%E6%B3%95%E6%B5%81%E7%A8%8B%E4%BC%AA%E4%BB%A3%E7%A0%81"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">VF2算法流程伪代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%BC%E6%8B%89%E6%96%AF%E5%93%A5%E6%B1%82%E8%A7%A3%E5%99%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">格拉斯哥求解器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%88%91%E5%8F%AF%E4%BB%A5%E6%88%90%E5%8A%9F%E8%BF%90%E8%A1%8C%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">我可以成功运行的代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%95%E5%9B%BE%E7%9A%84%E5%BB%BA%E6%A8%A1"><span class="nav-number">2.1.</span> <span class="nav-text">底图的建模</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%88%B0CSV%EF%BC%88%E6%A0%BC%E6%8B%89%E6%96%AF%E5%93%A5%E6%B1%82%E8%A7%A3%E5%99%A8%EF%BC%89"><span class="nav-number">2.1.1.</span> <span class="nav-text">存储到CSV（格拉斯哥求解器）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol>
     </div>
 </div>
 
